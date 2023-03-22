@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>運勢アプリ</title>
+  <style>
+    body {
+      background-color: lavenderblush;
+      font-family: 'Arial', sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="text-center mt-5">運勢アプリ</h1>
+    <form id="fortuneForm">
+      <div class="form-group">
+        <label for="name">氏名:</label>
+        <input type="text" class="form-control" id="name" placeholder="氏名を入力" required>
+      </div>
+      <div class="form-group">
+        <label for="gender">性別:</label><br>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="gender" id="gender1" value="男" required>
+          <label class="form-check-label" for="gender1">男</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="gender" id="gender2" value="女">
+          <label class="form-check-label" for="gender2">女</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="gender" id="gender3" value="その他">
+          <label class="form-check-label" for="gender3">その他</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="birthdate">生年月日:</label>
+        <input type="date" class="form-control" id="birthdate" required>
+      </div>
+      <button type="submit" class="btn btn-primary">占う</button>
+    </form>
+    <div id="result" class="mt-5" style="display: none;">
+      <h2>運勢結果</h2>
+      <ul>
+        <li id="total"></li>
+        <li id="love"></li>
+        <li id="money"></li>
+        <li id="work"></li>
+        <li id="health"></li>
+      </ul>
+      <canvas id="radarChart" width="400" height="400"></canvas>
+    </div>
+    <div class="mt-5">
+      <h2>管理者画面</h2>
+      <form>
+        <div class="form-group">
+          <label for="password">パスワード:</label>
+                   <input type="password" class="form-control" id="password" placeholder="パスワードを入力">
+        </div>
+        <button type="button" class="btn btn-primary" onclick="showAdmin()">管理者画面にアクセス</button>
+      </form>
+      <div id="admin" class="mt-5" style="display: none;">
+        <h3>履歴</h3>
+        <ul id="history"></ul>
+      </div>
+    </div>
+  </div>
+  <script>
+    let historyData = [];
+
+    document.getElementById('fortuneForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const name = document.getElementById('name').value;
+      const gender = document.querySelector('input[name="gender"]:checked').value;
+      const birthdate = document.getElementById('birthdate').value;
+
+      const total = Math.ceil(Math.random() * 10);
+      const love = Math.ceil(Math.random() * 10);
+      const money = Math.ceil(Math.random() * 10);
+      const work = Math.ceil(Math.random() * 10);
+      const health = Math.ceil(Math.random() * 10);
+
+      document.getElementById('total').innerHTML = `総合運: ${total}点<br>今日は全体的に良い日です。`;
+      document.getElementById('love').innerHTML = `恋愛運: ${love}点<br>出会いのチャンスがあります。`;
+      document.getElementById('money').innerHTML = `金運: ${money}点<br>臨時収入があるかもしれません。`;
+      document.getElementById('work').innerHTML = `仕事運: ${work}点<br>チームワークがうまくいく日です。`;
+      document.getElementById('health').innerHTML = `健康運: ${health}点<br>体調が良好で運動に適した日です。`;
+
+      const ctx = document.getElementById('radarChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: ['総合運', '恋愛運', '金運', '仕事運', '健康運'],
+          datasets: [{
+            data: [total, love, money, work, health],
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scale: {
+            ticks: {
+              beginAtZero: true,
+              max: 10
+            }
+          }
+        }
+      });
+
+      historyData.push({ name, gender, birthdate });
+      document.getElementById('result').style.display = 'block';
+    });
+
+    function showAdmin() {
+      const password = document.getElementById('password').value;
+      if (password === '20230322') {
+        const historyList = document.getElementById('history');
+        historyList.innerHTML = '';
+        historyData.forEach(item => {
+          const li = document.createElement('li');
+          li.innerHTML = `${item.name} (${item.gender}) - ${item.birthdate}`;
+          historyList.appendChild(li);
+        });
+        document.getElementById('admin').style.display = 'block';
+      } else {
+        alert('パスワードが違います。');
+      }
+    }
+  </script>
+</body>
+</html>
+``
